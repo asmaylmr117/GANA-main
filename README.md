@@ -5,7 +5,7 @@
 ## 🔗 Live Demo
 
 🧎‍♂️ Visit the live website:  
-👉 [**Religious Site Live**](https://gana-2fau.vercel.app/)
+👉 [**Religious Site Live**](https://gana-main.vercel.app/)
 
 ## 🧰 Technologies Used
 
