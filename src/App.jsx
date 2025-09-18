@@ -72,21 +72,17 @@ const App = () => {
         
         <div className="flex md:hidden items-center justify-between">
       
-          
-
-       
-          <div className="flex space-x-2 mr-8">
-            <button className="text-yellow-500 text-xs icon hover:text-yellow-300 transition-colors duration-200" onClick={() => toggleSection('misbaha')}>
-              المسبحة الإلكترونية
-            </button>
-            <button className="text-yellow-500 text-xs icon hover:text-yellow-300 transition-colors duration-200" onClick={() => toggleSection('azkar')}>
-              الأذكار
-            </button>
-            <button className="text-yellow-500 text-xs icon hover:text-yellow-300 transition-colors duration-200" onClick={() => toggleSection('quran')}>
-              القرآن الكريم
-            </button>
-          </div>
-
+        <div className="flex space-x-4 mr-4 flex-nowrap">
+  <button className="text-yellow-500 text-xs icon hover:text-yellow-300 transition-colors duration-200 whitespace-nowrap text-right" onClick={() => toggleSection('misbaha')}>
+    المسبحة الإلكترونية
+  </button>
+  <button className="text-yellow-500 text-xs icon hover:text-yellow-300 transition-colors duration-200 whitespace-nowrap text-right" onClick={() => toggleSection('azkar')}>
+    الأذكار
+  </button>
+  <button className="text-yellow-500 text-xs icon hover:text-yellow-300 transition-colors duration-200 whitespace-nowrap text-right" onClick={() => toggleSection('quran')}>
+    القرآن الكريم
+  </button>
+</div>
 
           <div className="flex items-center space-x-2 flex-shrink-0">
             <h1 className="text-white text-xs sm:text-2xl md:text-base lg:text-lg xl:text-xl 2xl:text-2xl text-center px-2">
