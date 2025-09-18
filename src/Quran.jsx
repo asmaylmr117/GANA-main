@@ -144,26 +144,27 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
     if (!surahData.pdfs[0]) return null;
 
     return (
-      <div className="mt-6">
+      <div className="mb-6">
         <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-xl p-6 shadow-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-1xl font-bold text-white">المصحف </h3>
-            <div className="flex space-x-4 gap-2 space-x-reverse">
-              <button
-                onClick={() => setShowPdfModal(true)}
-                className="bg-white text-yellow-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors font-bold"
-              >
-                عرض المصحف
-              </button>
-              <button
-                onClick={() => window.open(getPdfDownloadUrl(surahData.pdfs[0]), '_blank')}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-bold flex items-center space-x-1 space-x-reverse"
-              >
-                <Download size={18} />
-                <span>تحميل</span>
-              </button>
-            </div>
-          </div>
+       
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3 sm:gap-0">
+  <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white">المصحف</h3>
+  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 gap-2 sm:space-x-reverse">
+    <button
+      onClick={() => setShowPdfModal(true)}
+      className="bg-white text-yellow-600 px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm md:text-base rounded-lg hover:bg-gray-100 transition-colors font-bold whitespace-nowrap"
+    >
+      عرض المصحف
+    </button>
+    <button
+      onClick={() => window.open(getPdfDownloadUrl(surahData.pdfs[0]), '_blank')}
+      className="bg-yellow-500 text-white px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm md:text-base rounded-lg hover:bg-yellow-600 transition-colors font-bold flex items-center justify-center space-x-1 space-x-reverse whitespace-nowrap"
+    >
+      <Download size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
+      <span>تحميل</span>
+    </button>
+  </div>
+</div>
           
           {/* Preview thumbnail */}
           <div className="relative bg-white rounded-lg p-2 shadow-lg">
@@ -251,6 +252,9 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
           
           <h2 className="text-3xl text-white mb-6 text-center font-bold">{surahData.name}</h2>
           
+          {/* Beautiful PDF Card - Now appears BEFORE audio */}
+          <PdfCard />
+
           {/* Audio and Images Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
             {sectionImages[activeSurahIndex].map((image, index) => (
@@ -276,9 +280,6 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
               </div>
             ))}
           </div>
-
-          {/* Beautiful PDF Card */}
-          <PdfCard />
           
           {/* Floating PDF Button */}
           <FloatingPdfButton />
