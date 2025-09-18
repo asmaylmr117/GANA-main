@@ -7,9 +7,9 @@ a {
   color: inherit;
   text-decoration: none;
   margin-bottom: 9px;
-  /* تحقيق المسافة بين الأيقونات */
+ 
   display: block;
-  /* جعل كل رابط على سطر منفصل */
+ 
 }
 
 .developer-name {
@@ -17,7 +17,7 @@ a {
   margin-top: 5px;
   
   margin-top: 5px;
-  /* تحريك اسم المطور إلى أسفل الصورة */
+
 }
 
 .section:hover {
@@ -67,19 +67,19 @@ a {
 .background-image {
   background-image: url('public/img/photo.jpg');
   background-size: cover;
-  /* تغطية الشاشة بالكامل */
+ 
   background-repeat: no-repeat;
   background-position: 72% center;
-  /* تحريك الصورة باتجاه اليمين */
+
   background-attachment: fixed;
   min-height: 100vh;
-  /* تغطية الشاشة بالكامل */
+  
 }
 
 @media (max-width: 768px) {
   .background-image {
     background-position: 72% center;
-    /* ضبط التمركز على الهواتف */
+   
   }
 }
 
