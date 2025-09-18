@@ -147,7 +147,7 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
       <div className="mt-6">
         <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-xl p-6 shadow-2xl">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-2xl font-bold text-white">المصحف الشريف</h3>
+            <h3 className="text-1xl font-bold text-white">المصحف </h3>
             <div className="flex space-x-4 gap-2 space-x-reverse">
               <button
                 onClick={() => setShowPdfModal(true)}
