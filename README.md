@@ -3,7 +3,7 @@
 **Religious Site** is a spiritual and informative platform designed to help Muslims engage with their faith through easy access to the **Holy Quran**, **daily Azkar (remembrances)**, and a **digital Tasbeeh counter**. The site aims to provide a peaceful, user-friendly experience that works seamlessly across all devices.
 ## 🔗 backend repository
 
-👉 [**repository**](https://github.com/asmaylmr117/Gana-back)
+👉 [**backend repository**](https://github.com/asmaylmr117/Gana-back)
 
 ## 🔗 Live Demo
 
