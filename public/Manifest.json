@@ -1,0 +1,32 @@
+{
+  "name": "الطريق إلى الجنة",
+  "short_name": "الجنة",
+  "description": "تطبيق إسلامي يضم القرآن الكريم، الأذكار، والمسبحة الإلكترونية — صدقة جارية",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#f5c842",
+  "orientation": "portrait-primary",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/mosque-svgrepo-com.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/noshaf.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "religion",
+    "education"
+  ],
+  "screenshots": []
+}

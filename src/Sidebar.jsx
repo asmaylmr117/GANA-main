@@ -8,110 +8,135 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar, handleSidebarSectionClick, clos
   };
 
   return (
-    <div
-      className={`fixed top-0 right-0 h-screen w-80 bg-gray-900 z-50 transform transition-transform duration-300 ${
-        isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-      } text-white`}
-      style={{ boxShadow: '-4px 0px 10px rgba(0, 0, 0, 0.2)' }}
-    >
-     
-      <button
-        className="close-button absolute  text-red-500 text-1xl font-bold hover:text-red-700 transition-colors duration-200"
-        onClick={toggleSidebar}
+    <>
+      {/* Backdrop */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 backdrop-blur-sm"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* Sidebar panel */}
+      <aside
+        dir="rtl"
+        className={`sidebar fixed top-0 right-0 h-screen w-80 z-50 transform transition-transform duration-300 ease-in-out flex flex-col
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        ✕
-      </button>
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white border-opacity-10">
+          <h2 className="text-yellow-400 font-bold text-lg tracking-wide">القائمة</h2>
+          <button
+            className="text-gray-400 hover:text-white hover:bg-white hover:bg-opacity-10 w-9 h-9 rounded-full flex items-center justify-center transition-all text-xl"
+            onClick={toggleSidebar}
+            aria-label="إغلاق القائمة"
+          >
+            ✕
+          </button>
+        </div>
 
-      
-      <ul className="flex flex-col p-6 space-y-4 text-lg font-medium">
-       
-        <li
-          className={`cursor-pointer sidebar-section about text-white hover:text-green-700  ${
-            activeSection === 'about' ? 'font-bold' : ''
-          }`}
-          onClick={() => handleClick('about')}
-        >
-          عن الموقع
-        </li>
-        {activeSection === 'about' && (
-          <div className="p-4 bg-gray-900 rounded-md shadow-md">
-            <p className="text-sm leading-relaxed">
-              هذا موقع ديني يقدم القرآن الكريم كاملاً بأصوات نخبة من أفضل مشايخ التلاوة والتجويد، إلى جانب أذكار
-              الصباح والمساء والأدعية الدينية. كما يتضمن مسبحة إلكترونية لتسهيل التسبيح ويُقدم هذا العمل كصدقة
-              جارية على روح:
-            </p>
-            <div className="flex space-x-4 mt-4">
-              <div className="text-center">
-                <img
-                  src="img/baba.jpg"
-                  alt="والد المطور"
-                  className="w-16 h-20 rounded-full mx-auto mb-2"
-                />
-                <p className="text-xs">والدي الغالي الحاج إسماعيل إبراهيم العناني</p>
+        {/* ── Navigation items ── */}
+        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+
+          {/* About */}
+          <div>
+            <button
+              className={`sidebar-item w-full text-right ${activeSection === 'about' ? 'text-yellow-400 bg-yellow-500 bg-opacity-10 border-yellow-500 border-opacity-30' : 'text-white'}`}
+              onClick={() => handleClick('about')}
+            >
+              <span className="text-lg">🕌</span>
+              <span>عن الموقع</span>
+              <span className={`mr-auto transition-transform duration-200 text-xs ${activeSection === 'about' ? 'rotate-90' : ''}`}>
+                ▶
+              </span>
+            </button>
+
+            {activeSection === 'about' && (
+              <div className="mt-2 mb-3 p-4 bg-white bg-opacity-5 rounded-xl border border-white border-opacity-10 text-sm leading-relaxed text-gray-300 space-y-4">
+                <p>
+                  هذا موقع ديني يقدم القرآن الكريم كاملاً بأصوات نخبة من أفضل مشايخ التلاوة والتجويد، إلى جانب أذكار الصباح والمساء والأدعية. كما يتضمن مسبحة إلكترونية، ويُقدَّم كصدقة جارية على روح:
+                </p>
+                <div className="flex justify-around gap-2 pt-2">
+                  {[
+                    { src: 'img/baba.jpg', label: 'والدي الغالي الحاج إسماعيل إبراهيم العناني' },
+                    { src: 'img/bro.jpg', label: 'أخي محمود اسماعيل العناني' },
+                    { src: 'img/hema.jpg', label: 'الأستاذ إبراهيم المأذون' },
+                  ].map((person) => (
+                    <div key={person.label} className="text-center flex-1 min-w-0">
+                      <img
+                        src={person.src}
+                        alt={person.label}
+                        className="w-14 h-16 rounded-full mx-auto mb-2 object-cover border-2 border-yellow-600"
+                      />
+                      <p className="text-xs leading-snug text-gray-400">{person.label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="text-center">
-                <img
-                  src="img/bro.jpg"
-                  alt="أخي المطور"
-                  className="w-16 h-20 rounded-full mx-auto mb-2"
-                />
-                <p className="text-xs">أخي محمود اسماعيل العناني</p>
-              </div>
-              <div className="text-center">
-                <img
-                  src="img/hema.jpg"
-                  alt="الأستاذ المأذون"
-                  className="w-16 h-20 rounded-full mx-auto mb-2"
-                />
-                <p className="text-xs">الأستاذ إبراهيم المأذون</p>
-              </div>
-            </div>
+            )}
           </div>
-        )}
 
-        
-        <li
-          className={`cursor-pointer sidebar-section developer text-white hover:text-green-700 ${
-            activeSection === 'developer' ? 'font-bold' : ''
-          }`}
-          onClick={() => handleClick('developer')}
-        >
-          مطور الموقع
-        </li>
-        {activeSection === 'developer' && (
-          <div className="p-4 bg-gray-900 rounded-md shadow-md">
-            <img
-              src="img/mos.jpg"
-              alt="مطور الموقع"
-              className="w-24 h-29 rounded-full mx-auto mb-4 object-cover"
-            />
-            <div className="text-center text-xl font-bold mb-2">Mostafa Ismail Alanani</div>
-            <div className="flex justify-center space-x-4">
-              <a href="https://wa.me/+201066915691" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-whatsapp text-2xl text-green-500 hover:text-green-700"></i>
-              </a>
-              <a href="https://www.facebook.com/mostafa.enani.71" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-facebook text-2xl text-blue-500 hover:text-blue-700"></i>
-              </a>
-              <a href="https://t.me/asmaylmr" target="_blank" rel="noopener noreferrer">
-                <i className="fab fa-telegram text-2xl text-cyan-500 hover:text-cyan-700"></i>
-              </a>
-              <a href="tel:+20155884327" target="_blank" rel="noopener noreferrer">
-                <i className="fas fa-phone text-2xl text-red-500 hover:text-red-700"></i>
-              </a>
-            </div>
+          {/* Divider */}
+          <div className="sidebar-divider" />
+
+          {/* Developer */}
+          <div>
+            <button
+              className={`sidebar-item w-full text-right ${activeSection === 'developer' ? 'text-yellow-400 bg-yellow-500 bg-opacity-10 border-yellow-500 border-opacity-30' : 'text-white'}`}
+              onClick={() => handleClick('developer')}
+            >
+              <span className="text-lg">👨‍💻</span>
+              <span>مطور الموقع</span>
+              <span className={`mr-auto transition-transform duration-200 text-xs ${activeSection === 'developer' ? 'rotate-90' : ''}`}>
+                ▶
+              </span>
+            </button>
+
+            {activeSection === 'developer' && (
+              <div className="mt-2 mb-3 p-4 bg-white bg-opacity-5 rounded-xl border border-white border-opacity-10">
+                <img
+                  src="img/mosta.jpg"
+                  alt="مطور الموقع"
+                  className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-2 border-yellow-500 shadow-lg"
+                />
+                <div className="text-center font-bold text-white mb-4 text-base">
+                  Mostafa Ismail Alanani
+                </div>
+                <div className="flex justify-center gap-5">
+                  {[
+                    { href: 'https://wa.me/+201066915691', icon: 'fab fa-whatsapp', color: 'text-green-400 hover:text-green-300' },
+                    { href: 'https://www.facebook.com/mostafa.enani.71', icon: 'fab fa-facebook', color: 'text-blue-400 hover:text-blue-300' },
+                    { href: 'https://t.me/asmaylmr', icon: 'fab fa-telegram', color: 'text-cyan-400 hover:text-cyan-300' },
+                    { href: 'tel:+20155884327', icon: 'fas fa-phone', color: 'text-red-400 hover:text-red-300' },
+                  ].map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${link.color} text-2xl transition-colors`}
+                    >
+                      <i className={link.icon}></i>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </nav>
 
-    
-        <li
-          className="cursor-pointer sidebar-section logout text-white hover:text-red-700"
-          onClick={closeWindow}
-        >
-          الخروج
-        </li>
-      </ul>
-    </div>
+        {/* ── Footer: Logout pushed to very bottom ── */}
+        <div className="px-4 pb-6 pt-3 border-t border-white border-opacity-10">
+          <button
+            className="sidebar-item logout w-full text-right justify-center"
+            onClick={closeWindow}
+          >
+            <span className="text-lg">🚪</span>
+            <span>الخروج من الموقع</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
 

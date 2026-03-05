@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>غير متصل — الطريق إلى الجنة</title>
+    <meta name="theme-color" content="#f5c842" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #f9fafb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 420px;
+        }
+
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #f5c842;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(245, 200, 66, 0.3);
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+        }
+
+        .retry-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #f5c842, #e0a800);
+            color: #111827;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(245, 200, 66, 0.3);
+            text-decoration: none;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(245, 200, 66, 0.5);
+        }
+
+        .retry-btn:active {
+            transform: translateY(0);
+        }
+
+        .dua {
+            margin-top: 2.5rem;
+            padding: 16px 20px;
+            background: rgba(245, 200, 66, 0.08);
+            border: 1px solid rgba(245, 200, 66, 0.2);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #d1d5db;
+            line-height: 2;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon">🕌</div>
+        <h1>لا يوجد اتصال بالإنترنت</h1>
+        <p>
+            يبدو أنك غير متصل بالإنترنت حالياً.<br />
+            يمكنك تصفح المحتوى الذي تم تحميله مسبقاً، أو أعد المحاولة عند توفر الاتصال.
+        </p>
+        <a href="/" class="retry-btn" onclick="location.reload(); return false;">
+            🔄 إعادة المحاولة
+        </a>
+        <div class="dua">
+            ﴿ رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ ﴾
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,293 +1,409 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, Maximize2, Minimize2 } from 'lucide-react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Download, Maximize2 } from 'lucide-react';
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const getPdfEmbedUrl = (pdfUrl) => {
+  if (!pdfUrl) return '';
+  if (pdfUrl.includes('drive.google.com')) {
+    const fileId = pdfUrl.split('/d/')[1]?.split('/view')[0];
+    return `https://drive.google.com/file/d/${fileId}/preview`;
+  }
+  return pdfUrl;
+};
+
+const getPdfDownloadUrl = (pdfUrl) => {
+  if (!pdfUrl) return '';
+  if (pdfUrl.includes('drive.google.com')) {
+    const fileId = pdfUrl.split('/d/')[1]?.split('/view')[0];
+    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  }
+  return pdfUrl;
+};
+
+// ─── Virtual Scroll Grid ──────────────────────────────────────────────────────
+const VirtualSurahGrid = ({ surahNames, showSurah }) => {
+  const ITEM_HEIGHT = 90;
+  const MIN_COL_WIDTH = 160;
+  const OVERSCAN = 3;
+
+  const containerRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(500);
+  const [containerWidth, setContainerWidth] = useState(800);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width);
+      setContainerHeight(entry.contentRect.height);
+    });
+    ro.observe(el);
+    setContainerWidth(el.offsetWidth);
+    setContainerHeight(el.offsetHeight);
+    return () => ro.disconnect();
+  }, []);
+
+  const columnCount = Math.max(2, Math.floor(containerWidth / MIN_COL_WIDTH));
+  const colWidth = Math.floor(containerWidth / columnCount);
+  const rowCount = Math.ceil(surahNames.length / columnCount);
+  const totalHeight = rowCount * ITEM_HEIGHT;
+
+  const firstRow = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - OVERSCAN);
+  const lastRow = Math.min(rowCount - 1, Math.ceil((scrollTop + containerHeight) / ITEM_HEIGHT) + OVERSCAN);
+
+  const visibleRows = [];
+
+  for (let row = firstRow; row <= lastRow; row++) {
+    const cells = [];
+
+    for (let col = 0; col < columnCount; col++) {
+      const idx = row * columnCount + col;
+
+      if (idx >= surahNames.length) {
+        cells.push(<div key={col} style={{ width: colWidth, flexShrink: 0 }} />);
+        continue;
+      }
+
+      cells.push(
+        <div key={col} style={{ width: colWidth, flexShrink: 0, padding: '6px', boxSizing: 'border-box' }}>
+          <div
+            className="section-card h-full flex flex-col items-center justify-center gap-1"
+            style={{ minHeight: ITEM_HEIGHT - 12, cursor: 'pointer' }}
+            onClick={() => showSurah(idx)}
+          >
+            <span style={{ color: '#f5c842', fontSize: '11px', fontWeight: 700, opacity: 0.7 }}>
+              {idx + 1}
+            </span>
+            <span style={{ fontWeight: 700, fontSize: '14px', lineHeight: 1.4, textAlign: 'center' }}>
+              {surahNames[idx]}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    visibleRows.push(
+      <div
+        key={row}
+        style={{
+          position: 'absolute',
+          top: row * ITEM_HEIGHT,
+          width: '100%',
+          height: ITEM_HEIGHT,
+          display: 'flex',
+
+          flexDirection: 'row',
+        }}
+      >
+        {cells}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ height: '70vh', overflowY: 'auto', position: 'relative' }}
+      onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
+    >
+      <div style={{ height: totalHeight, position: 'relative' }}>
+        {visibleRows}
+      </div>
+    </div>
+  );
+};
+
+// ─── PDF Card ─────────────────────────────────────────────────────────────────
+const PdfCard = ({ surahData, setShowPdfModal }) => {
+  if (!surahData.pdfs?.[0]) return null;
+  return (
+    <div className="pdf-card mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+        <h3 className="text-white font-bold text-xl">📖 المصحف الشريف</h3>
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setShowPdfModal(true)}
+            className="bg-white text-yellow-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors font-bold text-sm whitespace-nowrap"
+          >
+            عرض ملء الشاشة
+          </button>
+          <a
+            href={getPdfDownloadUrl(surahData.pdfs[0])}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-bold text-sm flex items-center gap-2 whitespace-nowrap"
+          >
+            <Download size={15} />
+            <span>تحميل</span>
+          </a>
+        </div>
+      </div>
+      <div
+        className="relative bg-white rounded-xl overflow-hidden shadow-2xl cursor-pointer group"
+        onClick={() => setShowPdfModal(true)}
+      >
+        <iframe
+          src={getPdfEmbedUrl(surahData.pdfs[0])}
+          className="pdf-preview-frame w-full pointer-events-none"
+          title="معاينة المصحف"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all flex items-center justify-center">
+          <div className="bg-green-600 text-white p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-lg">
+            <Maximize2 size={26} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── PDF Modal ────────────────────────────────────────────────────────────────
+const HEADER_H = 52;
+
+const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
+  if (!showPdfModal || !surahData.pdfs?.[0]) return null;
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#000' }}>
+
+
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0,
+        height: HEADER_H, zIndex: 10000,
+        background: '#0f172a',
+        borderBottom: '2px solid #f5c842',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 16px', direction: 'rtl',
+      }}>
+        <span style={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', fontFamily: 'Cairo, sans-serif' }}>
+          📖 {surahData.name}
+        </span>
+
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <a
+            href={getPdfDownloadUrl(surahData.pdfs[0])}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: '6px 12px', borderRadius: 8,
+              background: 'rgba(245,200,66,0.12)',
+              border: '1px solid rgba(245,200,66,0.4)',
+              color: '#f5c842', textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: 4,
+              fontSize: '0.85rem', fontWeight: 600,
+              fontFamily: 'Cairo, sans-serif',
+            }}
+          >
+            <Download size={16} /><span>تحميل</span>
+          </a>
+
+
+          <button
+            onClick={() => setShowPdfModal(false)}
+            style={{
+              padding: '8px 20px',
+              background: '#dc2626',
+              color: '#fff', border: 'none',
+              borderRadius: 8, fontWeight: 700,
+              fontSize: '1rem', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontFamily: 'Cairo, sans-serif',
+              boxShadow: '0 2px 10px rgba(220,38,38,0.5)',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#b91c1c'}
+            onMouseLeave={(e) => e.currentTarget.style.background = '#dc2626'}
+          >
+            <span>إغلاق</span>
+            <span style={{ fontSize: '1.2rem' }}>✕</span>
+          </button>
+        </div>
+      </div>
+
+
+      <iframe
+        src={getPdfEmbedUrl(surahData.pdfs[0])}
+        title="عارض المصحف"
+        style={{
+          position: 'fixed',
+          top: HEADER_H, left: 0, right: 0,
+          width: '100%',
+          height: `calc(100vh - ${HEADER_H}px)`,
+          border: 'none',
+        }}
+      />
+
+
+      <button
+        onClick={() => setShowPdfModal(false)}
+        style={{
+          position: 'fixed',
+          bottom: 24,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 10001,
+          padding: '12px 36px',
+          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+          color: '#fff',
+          border: '2px solid rgba(255,255,255,0.2)',
+          borderRadius: 50,
+          fontWeight: 700,
+          fontSize: '1.05rem',
+          cursor: 'pointer',
+          fontFamily: 'Cairo, sans-serif',
+          boxShadow: '0 4px 24px rgba(220,38,38,0.6), 0 0 0 4px rgba(220,38,38,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          transition: 'all 0.3s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateX(-50%) scale(1.08)';
+          e.currentTarget.style.boxShadow = '0 6px 32px rgba(220,38,38,0.8), 0 0 0 6px rgba(220,38,38,0.3)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 24px rgba(220,38,38,0.6), 0 0 0 4px rgba(220,38,38,0.2)';
+        }}
+      >
+        <span style={{ fontSize: '1.2rem' }}>✕</span>
+        <span>خروج من ملء الشاشة</span>
+      </button>
+    </div>
+  );
+};
+
+// ─── Reader images ────────────────────────────────────────────────────────────
+const firstTenSectionImages = [
+  'img/mostafa.jpg', 'img/abdoo.jpg', 'img/Sedeq.jpg', 'img/hosery.jpg', 'img/bana.jpg',
+  'img/agmy1.jpg', 'img/sodes.jpg', 'img/moeqlyi.jpeg', 'img/unnamed.png', 'img/mshary.jpg',
+];
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
-  const firstTenSectionImages = [
-    "img/mostafa.jpg",
-    "img/abdoo.jpg",
-    "img/Sedeq.jpg",
-    "img/hosery.jpg",
-    "img/bana.jpg",
-    "img/agmy1.jpg",
-    "img/sodes.jpg",
-    "img/moeqlyi.jpeg",
-    "img/unnamed.png",
-    "img/mshary.jpg",
-  ];
-  const sectionImages = Array(114).fill(firstTenSectionImages);
-
   const [surahNames, setSurahNames] = useState([]);
   const [surahData, setSurahData] = useState({ name: '', pdfs: [], audio: [] });
   const [isLoadingSurahNames, setIsLoadingSurahNames] = useState(true);
   const [isLoadingSurahData, setIsLoadingSurahData] = useState(false);
-  const [pdfViewMode, setPdfViewMode] = useState('modal'); // 'modal', 'inline', 'fullscreen'
   const [showPdfModal, setShowPdfModal] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const audioRefs = useRef([]);
 
   useEffect(() => {
-    const fetchSurahNames = async () => {
-      setIsLoadingSurahNames(true);
-      try {
-        const response = await fetch('https://gana-back-plum.vercel.app/api/surahs');
-        const data = await response.json();
-        setSurahNames(data.map(surah => surah.name));
-      } catch (error) {
-        console.error('Error fetching surah names:', error);
-      } finally {
-        setIsLoadingSurahNames(false);
-      }
-    };
-    fetchSurahNames();
+    setIsLoadingSurahNames(true);
+    fetch('https://gana-back-plum.vercel.app/api/surahs')
+      .then((r) => r.json())
+      .then((data) => setSurahNames(data.map((s) => s.name)))
+      .catch(console.error)
+      .finally(() => setIsLoadingSurahNames(false));
   }, []);
 
   useEffect(() => {
-    if (activeSurahIndex !== null) {
-      const fetchSurahData = async () => {
-        setIsLoadingSurahData(true);
-        try {
-          const response = await fetch(`https://gana-back-plum.vercel.app/api/surahs/${activeSurahIndex + 1}`);
-          const data = await response.json();
-          setSurahData({
-            name: data.name,
-            pdfs: data.pdfs,
-            audio: data.audio
-          });
-        } catch (error) {
-          console.error('Error fetching surah data:', error);
-        } finally {
-          setIsLoadingSurahData(false);
-        }
-      };
-      fetchSurahData();
-    } else {
-      setSurahData({ name: '', pdfs: [], audio: [] });
-      setIsLoadingSurahData(false);
-    }
+    if (activeSurahIndex === null) { setSurahData({ name: '', pdfs: [], audio: [] }); return; }
+    setIsLoadingSurahData(true);
+    fetch(`https://gana-back-plum.vercel.app/api/surahs/${activeSurahIndex + 1}`)
+      .then((r) => r.json())
+      .then((data) => setSurahData({ name: data.name, pdfs: data.pdfs, audio: data.audio }))
+      .catch(console.error)
+      .finally(() => setIsLoadingSurahData(false));
   }, [activeSurahIndex]);
 
-  const handlePlay = (currentIndex) => {
-    audioRefs.current.forEach((audio, index) => {
-      if (index !== currentIndex && audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+  const handlePlay = useCallback((currentIndex) => {
+    audioRefs.current.forEach((audio, i) => {
+      if (i !== currentIndex && audio) { audio.pause(); audio.currentTime = 0; }
     });
-  };
-
-  const getPdfEmbedUrl = (pdfUrl) => {
-    if (pdfUrl?.includes('drive.google.com')) {
-      const fileId = pdfUrl.split('/d/')[1]?.split('/view')[0];
-      return `https://drive.google.com/file/d/${fileId}/preview`;
-    }
-    return pdfUrl;
-  };
-
-  const getPdfDownloadUrl = (pdfUrl) => {
-    if (pdfUrl?.includes('drive.google.com')) {
-      const fileId = pdfUrl.split('/d/')[1]?.split('/view')[0];
-      return `https://drive.google.com/uc?export=download&id=${fileId}`;
-    }
-    return pdfUrl;
-  };
-
-  // Modern PDF Modal Component
-  const PdfModal = () => {
-    if (!showPdfModal || !surahData.pdfs[0]) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
-        <div className="relative w-full h-full max-w-full max-h-full p-2">
-          {/* Modal Header */}
-          <div className="flex items-center justify-between bg-gray-900 rounded-t-lg p-2 text-white">
-            <h3 className="text-lg font-bold">مصحف - {surahData.name}</h3>
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <button
-                onClick={() => setIsFullscreen(!isFullscreen)}
-                className="p-2 hover:bg-gray-700 rounded transition-colors"
-                title={isFullscreen ? "تصغير" : "ملء الشاشة"}
-              >
-                {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
-              </button>
-              <button
-                onClick={() => window.open(getPdfDownloadUrl(surahData.pdfs[0]), '_blank')}
-                className="p-2 hover:bg-gray-700 rounded transition-colors"
-                title="تحميل"
-              >
-                <Download size={20} />
-              </button>
-              <button
-                onClick={() => setShowPdfModal(false)}
-                className="p-2 hover:bg-red-600 rounded transition-colors text-2xl"
-              >
-                ×
-              </button>
-            </div>
-          </div>
-          
-          {/* PDF Viewer */}
-          <div className={`bg-white rounded-b-lg ${isFullscreen ? 'h-[calc(100vh-0.5rem)]' : 'h-[calc(100vh-4rem)]'}`}>
-            <iframe
-              src={getPdfEmbedUrl(surahData.pdfs[0])}
-              className="w-full h-full rounded-b-lg border-0"
-              title="PDF Viewer"
-              style={{ minHeight: '90vh' }}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Elegant PDF Card Component
-  const PdfCard = () => {
-    if (!surahData.pdfs[0]) return null;
-
-    return (
-      <div className="mb-6">
-        <div className="bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-xl p-6 shadow-2xl">
-       
-<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3 sm:gap-0">
-  <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white">المصحف</h3>
-  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 gap-2 sm:space-x-reverse">
-    <button
-      onClick={() => setShowPdfModal(true)}
-      className="bg-white text-yellow-600 px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm md:text-base rounded-lg hover:bg-gray-100 transition-colors font-bold whitespace-nowrap"
-    >
-      عرض المصحف
-    </button>
-    <button
-      onClick={() => window.open(getPdfDownloadUrl(surahData.pdfs[0]), '_blank')}
-      className="bg-yellow-500 text-white px-3 py-2 sm:px-4 sm:py-2 text-xs sm:text-sm md:text-base rounded-lg hover:bg-yellow-600 transition-colors font-bold flex items-center justify-center space-x-1 space-x-reverse whitespace-nowrap"
-    >
-      <Download size={14} className="sm:w-4 sm:h-4 md:w-5 md:h-5" />
-      <span>تحميل</span>
-    </button>
-  </div>
-</div>
-          
-          {/* Preview thumbnail */}
-          <div className="relative bg-white rounded-lg p-2 shadow-lg">
-            <iframe
-              src={getPdfEmbedUrl(surahData.pdfs[0])}
-              className="w-full h-64 rounded pointer-events-none"
-              title="PDF Preview"
-            />
-            <div 
-              className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all cursor-pointer rounded-lg flex items-center justify-center"
-              onClick={() => setShowPdfModal(true)}
-            >
-              <div className="bg-green-600 text-white p-4 rounded-full opacity-0 hover:opacity-100 transition-opacity">
-                <Maximize2 size={24} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Floating PDF Button
-  const FloatingPdfButton = () => {
-    if (!surahData.pdfs[0]) return null;
-
-    return (
-      <div className="fixed bottom-6 right-6 z-40">
-        <button
-          onClick={() => setShowPdfModal(true)}
-          className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-full shadow-2xl hover:shadow-green-500/25 hover:scale-110 transition-all duration-300"
-        >
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
-    );
-  };
+  }, []);
 
   return (
-    <div>
-      {/* Loading screens */}
+    <div dir="rtl">
       {isLoadingSurahNames && (
-        <div className="fixed top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-gray-900 bg-opacity-70 z-50">
-          <div className="text-white text-2xl font-bold mb-4">جارٍ تحميل أسماء السور...</div>
-          <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-yellow-500"></div>
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-50">
+          <div className="text-white text-2xl font-bold mb-6">جارٍ تحميل أسماء السور…</div>
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-yellow-500" />
         </div>
       )}
-
       {isLoadingSurahData && (
-        <div className="fixed top-0 left-0 w-full h-full flex flex-col justify-center items-center bg-gray-900 bg-opacity-70 z-50">
-          <div className="text-white text-2xl font-bold mb-4">جارٍ تحميل بيانات السورة...</div>
-          <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-green-500"></div>
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-50">
+          <div className="text-white text-2xl font-bold mb-6">جارٍ تحميل بيانات السورة…</div>
+          <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-green-500" />
         </div>
       )}
 
-      {/* Surah names grid */}
+
       {activeSurahIndex === null && !isLoadingSurahNames && (
-        <div className="mt-4 p-4 bg-white bg-opacity-10 text-center shadow-md">
-          <h2 className="text-2xl mb-4 text-white">القرآن الكريم</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {surahNames.map((surah, index) => (
+        <div className="mt-4 p-4 rounded-xl shadow-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <h2 className="text-2xl font-bold text-center text-white mb-6"> القرآن الكريم</h2>
+          <VirtualSurahGrid surahNames={surahNames} showSurah={showSurah} />
+        </div>
+      )}
+
+
+      {activeSurahIndex !== null && !isLoadingSurahData && (
+        <div className="mt-4 p-4 rounded-xl shadow-lg relative" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <button
+            className="absolute top-4 left-4 text-white bg-red-500 hover:bg-red-600 w-9 h-9 rounded-full text-xl z-10 transition-colors flex items-center justify-center"
+            onClick={closeSurah}
+          >✕</button>
+
+          <h2 className="text-3xl font-bold text-center text-white mb-6">{surahData.name}</h2>
+
+          <PdfCard surahData={surahData} setShowPdfModal={setShowPdfModal} />
+
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
+            {firstTenSectionImages.map((image, index) => (
               <div
                 key={index}
-                className="section p-4 bg-gray-900 bg-opacity-80 rounded-lg cursor-pointer text-center text-white hover:bg-opacity-90 hover:scale-105 transition-all duration-300 shadow-lg"
-                onClick={() => showSurah(index)}
+                className="audio-gold-frame"
+                style={{
+                  borderRadius: '14px',
+                  overflow: 'hidden',
+                  background: 'linear-gradient(135deg,#1a2332,#111827)',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                }}
               >
-                <div className="font-bold">{surah}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Specific surah content */}
-      {activeSurahIndex !== null && !isLoadingSurahData && (
-        <div className="mt-4 p-4 bg-white bg-opacity-10 shadow-md relative rounded-lg">
-          <button 
-            className="absolute top-4 right-4 text-white bg-red-500 hover:bg-red-600 w-8 h-8 rounded-full flex items-center justify-center text-xl z-10 transition-colors" 
-            onClick={closeSurah}
-          >
-            ×
-          </button>
-          
-          <h2 className="text-3xl text-white mb-6 text-center font-bold">{surahData.name}</h2>
-          
-          {/* Beautiful PDF Card - Now appears BEFORE audio */}
-          <PdfCard />
-
-          {/* Audio and Images Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
-            {sectionImages[activeSurahIndex].map((image, index) => (
-              <div key={index} className="relative cursor-pointer bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all">
                 <img
                   src={image}
-                  alt={`Section ${index + 1}`}
-                  className="w-full h-auto object-cover rounded-t-lg aspect-[16/9]"
+                  alt={`قارئ ${index + 1}`}
+                  className="w-full object-cover aspect-video"
+                  loading="lazy"
                 />
-                {surahData.audio[index] && (
-                  <div className="p-2">
+                {surahData.audio?.[index] && (
+                  <div className="p-2 ">
                     <audio
                       controls
-                      className="w-full"
+                      className="w-full  "
                       ref={(el) => (audioRefs.current[index] = el)}
                       onPlay={() => handlePlay(index)}
                     >
                       <source src={surahData.audio[index]} type="audio/mpeg" />
-                      Your browser does not support the audio element.
                     </audio>
                   </div>
                 )}
               </div>
             ))}
           </div>
-          
-          {/* Floating PDF Button */}
-          <FloatingPdfButton />
+
+
+          {surahData.pdfs?.[0] && (
+            <div className="fixed bottom-20 left-4 z-40">
+              <button
+                onClick={() => setShowPdfModal(true)}
+                className="bg-gradient-to-br from-green-500 to-green-700 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform"
+                title="فتح المصحف"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* PDF Modal */}
-      <PdfModal />
+      <PdfModal surahData={surahData} showPdfModal={showPdfModal} setShowPdfModal={setShowPdfModal} />
     </div>
   );
 };
