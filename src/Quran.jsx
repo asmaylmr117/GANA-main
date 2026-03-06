@@ -269,7 +269,7 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
         }}
       >
         <span style={{ fontSize: '1.2rem' }}>✕</span>
-        <span>خروج من ملء الشاشة</span>
+       
       </button>
     </div>
   );

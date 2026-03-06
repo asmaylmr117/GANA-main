@@ -115,7 +115,8 @@ a {
 
 .background-image>* {
   position: relative;
-  z-index: 1;
+  z-index: auto;
+  /* كان 1 — يتعارض مع z-index الهيدر الـ fixed */
 }
 
 /* ==========================================
@@ -125,19 +126,18 @@ a {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   border-bottom: 2px solid var(--color-gold);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(245, 200, 66, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 40;
+  /* position/top/z-index محذوفة — الـ fixed wrapper في App.jsx يتحكم بالثبات */
 }
 
 .nav-brand {
   font-family: var(--font-primary);
   font-weight: 800;
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-size: clamp(0.85rem, 2.5vw, 1.4rem);
   letter-spacing: 0.02em;
   color: var(--color-text-primary);
   text-decoration: none;
   transition: var(--transition-smooth);
+  white-space: nowrap;
 }
 
 .nav-brand:hover {
@@ -623,22 +623,13 @@ audio::-webkit-media-controls-mute-button {
   font-family: var(--font-primary);
   font-weight: 600;
   background: linear-gradient(135deg, #0f172a, #1e293b);
-  border-top: 2px solid var(--color-gold);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 2px solid var(--color-gold);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  position: fixed;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
 
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 /* ==========================================
    ANIMATIONS

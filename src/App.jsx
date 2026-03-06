@@ -32,7 +32,7 @@ const PwaInstallBanner = () => {
   if (!showBanner) return null;
 
   return (
-    <div className="pwa-banner fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 text-white">
+    <div className="pwa-banner fixed top-0 left-0 w-full z-20 flex items-center justify-between px-4 py-3 text-white">
       <button
         onClick={() => setShowBanner(false)}
         className="text-gray-400 hover:text-white transition-colors text-xl ml-4"
@@ -42,7 +42,7 @@ const PwaInstallBanner = () => {
         <span className="text-2xl">📲</span>
         <div>
           <div className="font-bold text-sm">ثبّت التطبيق</div>
-          <div className="text-xs text-gray-300">استخدم الموقع بدون إنترنت كتطبيق أصلي</div>
+          <div className="text-xs text-gray-300">استخدم الموقع كتطبيق أصلي</div>
         </div>
       </div>
       <button
@@ -117,50 +117,51 @@ const App = () => {
       {/* ══════════════════════════════════════
           HEADER
       ══════════════════════════════════════ */}
-      <header className="nav-header p-3 px-4">
+      <header className="nav-header">
+        <div className="relative w-full h-full p-3 px-4">
 
-        {/* Small screen */}
-        <div className="flex md:hidden items-center justify-between">
-
-          <div className="flex items-center gap-2">
-            <HamburgerIcon />
-            <a href="#" className="nav-brand">الطريق إلى الجنة</a>
+          {/* Small screen */}
+          <div className="flex md:hidden items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HamburgerIcon />
+              <a href="#" className="nav-brand">الطريق إلى الجنة</a>
+            </div>
+            <nav className="flex items-center gap-1">
+              <button className="nav-btn text-xs" onClick={() => toggleSection('misbaha')}>المسبحة</button>
+              <button className="nav-btn text-xs" onClick={() => toggleSection('azkar')}>الأذكار</button>
+              <button className="nav-btn text-xs" onClick={() => toggleSection('quran')}>القرآن</button>
+            </nav>
           </div>
 
-          <nav className="flex items-center gap-1">
-            <button className="nav-btn text-xs" onClick={() => toggleSection('misbaha')}>المسبحة</button>
-            <button className="nav-btn text-xs" onClick={() => toggleSection('azkar')}>الأذكار</button>
-            <button className="nav-btn text-xs" onClick={() => toggleSection('quran')}>القرآن</button>
-          </nav>
-        </div>
-
-        {/* Large screen */}
-        <div className="hidden md:flex items-center justify-between">
-
-          <div className="flex items-center gap-2">
-            <HamburgerIcon />
-            <a href="#" className="nav-brand">الطريق إلى الجنة</a>
+          {/* Large screen */}
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HamburgerIcon />
+              <a href="#" className="nav-brand">الطريق إلى الجنة</a>
+            </div>
+            <nav className="flex items-center gap-1">
+              <button className="nav-btn" onClick={() => toggleSection('misbaha')}>المسبحة الإلكترونية</button>
+              <span className="text-yellow-800 text-lg select-none">|</span>
+              <button className="nav-btn" onClick={() => toggleSection('azkar')}>الأذكار</button>
+              <span className="text-yellow-800 text-lg select-none">|</span>
+              <button className="nav-btn" onClick={() => toggleSection('quran')}>القرآن الكريم</button>
+            </nav>
+            <MosqueIcon />
           </div>
 
-
-          <nav className="flex items-center gap-1">
-            <button className="nav-btn" onClick={() => toggleSection('misbaha')}>المسبحة الإلكترونية</button>
-            <span className="text-yellow-800 text-lg select-none">|</span>
-            <button className="nav-btn" onClick={() => toggleSection('azkar')}>الأذكار</button>
-            <span className="text-yellow-800 text-lg select-none">|</span>
-            <button className="nav-btn" onClick={() => toggleSection('quran')}>القرآن الكريم</button>
-          </nav>
-
-
-          <MosqueIcon />
         </div>
-
       </header>
+
+      {/* ══════════════════════════════════════
+          PWA BANNER 
+      ══════════════════════════════════════ */}
+      <PwaInstallBanner />
 
       {/* ══════════════════════════════════════
           MAIN
       ══════════════════════════════════════ */}
       <main className="container mx-auto p-4 max-w-screen-2xl">
+     
         {isSidebarOpen && (
           <Sidebar
             isSidebarOpen={isSidebarOpen}
@@ -180,8 +181,6 @@ const App = () => {
           <Misbaha count={count} handleClick={handleClick} handleReset={handleReset} />
         )}
       </main>
-
-      <PwaInstallBanner />
     </div>
   );
 };
