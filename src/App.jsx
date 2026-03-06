@@ -32,7 +32,7 @@ const PwaInstallBanner = () => {
   if (!showBanner) return null;
 
   return (
-    <div className="pwa-banner fixed top-0 left-0 w-full z-20 flex items-center justify-between px-4 py-3 text-white">
+    <div className="pwa-banner fixed top-16 left-0 w-full z-20 flex items-center justify-between px-4 py-3 text-white">
       <button
         onClick={() => setShowBanner(false)}
         className="text-gray-400 hover:text-white transition-colors text-xl ml-4"
