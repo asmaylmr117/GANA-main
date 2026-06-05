@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Download, Maximize2 } from 'lucide-react';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 const getPdfEmbedUrl = (pdfUrl) => {
   if (!pdfUrl) return '';
   if (pdfUrl.includes('drive.google.com')) {
@@ -20,7 +19,6 @@ const getPdfDownloadUrl = (pdfUrl) => {
   return pdfUrl;
 };
 
-// ─── Virtual Scroll Grid ──────────────────────────────────────────────────────
 const VirtualSurahGrid = ({ surahNames, showSurah }) => {
   const ITEM_HEIGHT = 90;
   const MIN_COL_WIDTH = 160;
@@ -56,15 +54,12 @@ const VirtualSurahGrid = ({ surahNames, showSurah }) => {
 
   for (let row = firstRow; row <= lastRow; row++) {
     const cells = [];
-
     for (let col = 0; col < columnCount; col++) {
       const idx = row * columnCount + col;
-
       if (idx >= surahNames.length) {
         cells.push(<div key={col} style={{ width: colWidth, flexShrink: 0 }} />);
         continue;
       }
-
       cells.push(
         <div key={col} style={{ width: colWidth, flexShrink: 0, padding: '6px', boxSizing: 'border-box' }}>
           <div
@@ -82,7 +77,6 @@ const VirtualSurahGrid = ({ surahNames, showSurah }) => {
         </div>
       );
     }
-
     visibleRows.push(
       <div
         key={row}
@@ -119,13 +113,15 @@ const PdfCard = ({ surahData, setShowPdfModal }) => {
   return (
     <div className="pdf-card mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-        <h3 className="text-white font-bold text-xl">{'📖 المصحف الشريف'}</h3>
+        <h3 className="text-white font-bold text-xl">
+          📖 المصحف الشريف
+        </h3>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setShowPdfModal(true)}
             className="bg-white text-yellow-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors font-bold text-sm whitespace-nowrap"
           >
-            {'عرض ملء الشاشة'}
+            عرض ملء الشاشة
           </button>
           
             href={getPdfDownloadUrl(surahData.pdfs[0])}
@@ -134,7 +130,7 @@ const PdfCard = ({ surahData, setShowPdfModal }) => {
             className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-bold text-sm flex items-center gap-2 whitespace-nowrap"
           >
             <Download size={15} />
-            <span>{'تحميل'}</span>
+            <span>تحميل</span>
           </a>
         </div>
       </div>
@@ -178,7 +174,7 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
         }}
       >
         <span style={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', fontFamily: 'Cairo, sans-serif' }}>
-          {'📖 '}{surahData.name}
+          📖 {surahData.name}
         </span>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -197,7 +193,7 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
             }}
           >
             <Download size={16} />
-            <span>{'تحميل'}</span>
+            <span>تحميل</span>
           </a>
 
           <button
@@ -229,8 +225,8 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
               e.currentTarget.style.transform = 'scale(1)';
             }}
           >
-            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{'✕'}</span>
-            <span>{'إغلاق'}</span>
+            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>✕</span>
+            <span>إغلاق</span>
           </button>
         </div>
       </div>
@@ -302,21 +298,21 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
     <div dir="rtl">
       {isLoadingSurahNames && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-50">
-          <div className="text-white text-2xl font-bold mb-6">{'جارٍ تحميل أسماء السور…'}</div>
+          <div className="text-white text-2xl font-bold mb-6">جارٍ تحميل أسماء السور…</div>
           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-yellow-500" />
         </div>
       )}
 
       {isLoadingSurahData && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-50">
-          <div className="text-white text-2xl font-bold mb-6">{'جارٍ تحميل بيانات السورة…'}</div>
+          <div className="text-white text-2xl font-bold mb-6">جارٍ تحميل بيانات السورة…</div>
           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-green-500" />
         </div>
       )}
 
       {activeSurahIndex === null && !isLoadingSurahNames && (
         <div className="mt-4 p-4 rounded-xl shadow-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
-          <h2 className="text-2xl font-bold text-center text-white mb-6">{' القرآن الكريم'}</h2>
+          <h2 className="text-2xl font-bold text-center text-white mb-6">القرآن الكريم</h2>
           <VirtualSurahGrid surahNames={surahNames} showSurah={showSurah} />
         </div>
       )}
@@ -327,7 +323,7 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
             className="absolute top-4 left-4 text-white bg-red-500 hover:bg-red-600 w-9 h-9 rounded-full text-xl z-10 transition-colors flex items-center justify-center"
             onClick={closeSurah}
           >
-            {'✕'}
+            ✕
           </button>
 
           <h2 className="text-3xl font-bold text-center text-white mb-6">{surahData.name}</h2>
