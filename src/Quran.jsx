@@ -92,7 +92,6 @@ const VirtualSurahGrid = ({ surahNames, showSurah }) => {
           width: '100%',
           height: ITEM_HEIGHT,
           display: 'flex',
-
           flexDirection: 'row',
         }}
       >
@@ -128,7 +127,7 @@ const PdfCard = ({ surahData, setShowPdfModal }) => {
           >
             عرض ملء الشاشة
           </button>
-          <a
+          
             href={getPdfDownloadUrl(surahData.pdfs[0])}
             target="_blank"
             rel="noopener noreferrer"
@@ -167,8 +166,6 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#000' }}>
-
-
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0,
         height: HEADER_H, zIndex: 10000,
@@ -183,7 +180,7 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
         </span>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <a
+          
             href={getPdfDownloadUrl(surahData.pdfs[0])}
             target="_blank"
             rel="noopener noreferrer"
@@ -200,28 +197,35 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
             <Download size={16} /><span>تحميل</span>
           </a>
 
-
           <button
             onClick={() => setShowPdfModal(false)}
             style={{
-              padding: '8px 20px',
-              background: '#dc2626',
-              color: '#fff', border: 'none',
+              padding: '7px 18px',
+              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+              color: '#fff', border: '1.5px solid rgba(255,255,255,0.15)',
               borderRadius: 8, fontWeight: 700,
-              fontSize: '1rem', cursor: 'pointer',
+              fontSize: '0.95rem', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 6,
               fontFamily: 'Cairo, sans-serif',
-              boxShadow: '0 2px 10px rgba(220,38,38,0.5)',
+              boxShadow: '0 2px 12px rgba(220,38,38,0.45)',
+              transition: 'all 0.2s ease',
             }}
-            onMouseEnter={(e) => e.currentTarget.style.background = '#b91c1c'}
-            onMouseLeave={(e) => e.currentTarget.style.background = '#dc2626'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #b91c1c, #991b1b)';
+              e.currentTarget.style.boxShadow = '0 4px 18px rgba(220,38,38,0.65)';
+              e.currentTarget.style.transform = 'scale(1.04)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #dc2626, #b91c1c)';
+              e.currentTarget.style.boxShadow = '0 2px 12px rgba(220,38,38,0.45)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
           >
+            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>✕</span>
             <span>إغلاق</span>
-            <span style={{ fontSize: '1.2rem' }}>✕</span>
           </button>
         </div>
       </div>
-
 
       <iframe
         src={getPdfEmbedUrl(surahData.pdfs[0])}
@@ -234,43 +238,6 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
           border: 'none',
         }}
       />
-
-
-      <button
-        onClick={() => setShowPdfModal(false)}
-        style={{
-          position: 'fixed',
-          bottom: 24,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10001,
-          padding: '12px 36px',
-          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-          color: '#fff',
-          border: '2px solid rgba(255,255,255,0.2)',
-          borderRadius: 50,
-          fontWeight: 700,
-          fontSize: '1.05rem',
-          cursor: 'pointer',
-          fontFamily: 'Cairo, sans-serif',
-          boxShadow: '0 4px 24px rgba(220,38,38,0.6), 0 0 0 4px rgba(220,38,38,0.2)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          transition: 'all 0.3s ease',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateX(-50%) scale(1.08)';
-          e.currentTarget.style.boxShadow = '0 6px 32px rgba(220,38,38,0.8), 0 0 0 6px rgba(220,38,38,0.3)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
-          e.currentTarget.style.boxShadow = '0 4px 24px rgba(220,38,38,0.6), 0 0 0 4px rgba(220,38,38,0.2)';
-        }}
-      >
-        <span style={{ fontSize: '1.2rem' }}>✕</span>
-       
-      </button>
     </div>
   );
 };
@@ -330,14 +297,12 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
         </div>
       )}
 
-
       {activeSurahIndex === null && !isLoadingSurahNames && (
         <div className="mt-4 p-4 rounded-xl shadow-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
           <h2 className="text-2xl font-bold text-center text-white mb-6"> القرآن الكريم</h2>
           <VirtualSurahGrid surahNames={surahNames} showSurah={showSurah} />
         </div>
       )}
-
 
       {activeSurahIndex !== null && !isLoadingSurahData && (
         <div className="mt-4 p-4 rounded-xl shadow-lg relative" style={{ background: 'rgba(255,255,255,0.05)' }}>
@@ -349,7 +314,6 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
           <h2 className="text-3xl font-bold text-center text-white mb-6">{surahData.name}</h2>
 
           <PdfCard surahData={surahData} setShowPdfModal={setShowPdfModal} />
-
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
             {firstTenSectionImages.map((image, index) => (
@@ -371,10 +335,10 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
                   loading="lazy"
                 />
                 {surahData.audio?.[index] && (
-                  <div className="p-2 ">
+                  <div className="p-2">
                     <audio
                       controls
-                      className="w-full  "
+                      className="w-full"
                       ref={(el) => (audioRefs.current[index] = el)}
                       onPlay={() => handlePlay(index)}
                     >
@@ -385,7 +349,6 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
               </div>
             ))}
           </div>
-
 
           {surahData.pdfs?.[0] && (
             <div className="fixed bottom-20 left-4 z-40">
