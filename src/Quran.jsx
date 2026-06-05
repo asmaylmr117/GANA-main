@@ -107,9 +107,10 @@ const VirtualSurahGrid = ({ surahNames, showSurah }) => {
   );
 };
 
-// ─── PDF Card ─────────────────────────────────────────────────────────────────
 const PdfCard = ({ surahData, setShowPdfModal }) => {
   if (!surahData.pdfs?.[0]) return null;
+  const downloadUrl = getPdfDownloadUrl(surahData.pdfs[0]);
+  const embedUrl = getPdfEmbedUrl(surahData.pdfs[0]);
   return (
     <div className="pdf-card mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
@@ -123,8 +124,8 @@ const PdfCard = ({ surahData, setShowPdfModal }) => {
           >
             عرض ملء الشاشة
           </button>
-          
-            href={getPdfDownloadUrl(surahData.pdfs[0])}
+          <a
+            href={downloadUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-bold text-sm flex items-center gap-2 whitespace-nowrap"
@@ -139,7 +140,7 @@ const PdfCard = ({ surahData, setShowPdfModal }) => {
         onClick={() => setShowPdfModal(true)}
       >
         <iframe
-          src={getPdfEmbedUrl(surahData.pdfs[0])}
+          src={embedUrl}
           className="pdf-preview-frame w-full pointer-events-none"
           title="معاينة المصحف"
           loading="lazy"
@@ -154,12 +155,12 @@ const PdfCard = ({ surahData, setShowPdfModal }) => {
   );
 };
 
-// ─── PDF Modal ────────────────────────────────────────────────────────────────
 const HEADER_H = 52;
 
 const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
   if (!showPdfModal || !surahData.pdfs?.[0]) return null;
-
+  const downloadUrl = getPdfDownloadUrl(surahData.pdfs[0]);
+  const embedUrl = getPdfEmbedUrl(surahData.pdfs[0]);
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#000' }}>
       <div
@@ -176,10 +177,9 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
         <span style={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', fontFamily: 'Cairo, sans-serif' }}>
           📖 {surahData.name}
         </span>
-
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          
-            href={getPdfDownloadUrl(surahData.pdfs[0])}
+          <a
+            href={downloadUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -195,7 +195,6 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
             <Download size={16} />
             <span>تحميل</span>
           </a>
-
           <button
             onClick={() => setShowPdfModal(false)}
             style={{
@@ -230,9 +229,8 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
           </button>
         </div>
       </div>
-
       <iframe
-        src={getPdfEmbedUrl(surahData.pdfs[0])}
+        src={embedUrl}
         title="عارض المصحف"
         style={{
           position: 'fixed',
@@ -248,13 +246,11 @@ const PdfModal = ({ surahData, showPdfModal, setShowPdfModal }) => {
   );
 };
 
-// ─── Reader images ────────────────────────────────────────────────────────────
 const firstTenSectionImages = [
   'img/mostafa.jpg', 'img/abdoo.jpg', 'img/Sedeq.jpg', 'img/hosery.jpg', 'img/bana.jpg',
   'img/agmy1.jpg', 'img/sodes.jpg', 'img/moeqlyi.jpeg', 'img/unnamed.png', 'img/mshary.jpg',
 ];
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
   const [surahNames, setSurahNames] = useState([]);
   const [surahData, setSurahData] = useState({ name: '', pdfs: [], audio: [] });
@@ -302,21 +298,18 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-yellow-500" />
         </div>
       )}
-
       {isLoadingSurahData && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-80 z-50">
           <div className="text-white text-2xl font-bold mb-6">جارٍ تحميل بيانات السورة…</div>
           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-green-500" />
         </div>
       )}
-
       {activeSurahIndex === null && !isLoadingSurahNames && (
         <div className="mt-4 p-4 rounded-xl shadow-lg" style={{ background: 'rgba(255,255,255,0.05)' }}>
           <h2 className="text-2xl font-bold text-center text-white mb-6">القرآن الكريم</h2>
           <VirtualSurahGrid surahNames={surahNames} showSurah={showSurah} />
         </div>
       )}
-
       {activeSurahIndex !== null && !isLoadingSurahData && (
         <div className="mt-4 p-4 rounded-xl shadow-lg relative" style={{ background: 'rgba(255,255,255,0.05)' }}>
           <button
@@ -325,11 +318,8 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
           >
             ✕
           </button>
-
           <h2 className="text-3xl font-bold text-center text-white mb-6">{surahData.name}</h2>
-
           <PdfCard surahData={surahData} setShowPdfModal={setShowPdfModal} />
-
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-6">
             {firstTenSectionImages.map((image, index) => (
               <div
@@ -364,7 +354,6 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
               </div>
             ))}
           </div>
-
           {surahData.pdfs?.[0] && (
             <div className="fixed bottom-20 left-4 z-40">
               <button
@@ -384,7 +373,6 @@ const Quran = ({ activeSurahIndex, showSurah, closeSurah }) => {
           )}
         </div>
       )}
-
       <PdfModal
         surahData={surahData}
         showPdfModal={showPdfModal}
